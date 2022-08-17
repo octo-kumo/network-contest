@@ -1,0 +1,105 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'edu.sc.seis.launch4j' version '2.5.1'
+    id 'application'
+    id 'idea'
+}
+group 'z.yun'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+dependencies {
+    implementation "com.formdev:flatlaf:2.4"
+    implementation 'org.json:json:20220320'
+
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+    implementation 'io.socket:socket.io-client:1.0.2'
+    implementation 'com.corundumstudio.socketio:netty-socketio:1.7.19'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'ca.odell:glazedlists:0.9.7'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['res']
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass = 'z.yun.contest.server.ServerFrame'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Network Contest',
+                'Implementation-Version': project.version
+    }
+}
+
+launch4j {
+    outfile = "contest-${project.version}.exe"
+    mainClassName = project.mainClassName
+    jarTask = project.tasks.shadowJar
+    productName = 'Network Contest'
+}
+
+tasks.register("depsize") {
+    description = 'Prints dependencies for "default" configuration'
+    doLast() {
+        listConfigurationDependencies(configurations.default)
+    }
+}
+
+tasks.register("depsize-all-configurations") {
+    description = 'Prints dependencies for all available configurations'
+    doLast() {
+        configurations
+                .findAll { it.isCanBeResolved() }
+                .each { listConfigurationDependencies(it) }
+    }
+}
+
+def listConfigurationDependencies(Configuration configuration) {
+    def formatStr = "%,10.2f"
+
+    def size = configuration.collect { it.length() / (1024 * 1024) }.sum()
+
+    def out = new StringBuffer()
+    out << "\nConfiguration name: \"${configuration.name}\"\n"
+    if (size) {
+        out << 'Total dependencies size:'.padRight(65)
+        out << "${String.format(formatStr, size)} Mb\n\n"
+
+        configuration.sort { -it.length() }
+                .each {
+                    out << "${it.name}".padRight(65)
+                    out << "${String.format(formatStr, (it.length() / 1024))} kb\n"
+                }
+    } else {
+        out << 'No dependencies found';
+    }
+    println(out)
+}
