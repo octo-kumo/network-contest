@@ -31,14 +31,15 @@ public class ContestApp extends JFrame {
         JTextField host = new JTextField("http://localhost:9092", 10);
         host.setMaximumSize(new Dimension(Integer.MAX_VALUE, name.getPreferredSize().height));
         host.setBorder(new TitledBorder("Host"));
-        loginForm.add(Box.createGlue());
         loginForm.add(host);
         loginForm.add(name);
         loginForm.add(new JButton("Login") {{
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
             addActionListener(e -> new ClientFrame(ContestApp.this, host.getText(), name.getText()).setVisible(true));
         }});
-        loginForm.add(Box.createGlue());
+        loginForm.add(Box.createVerticalStrut(10));
         loginForm.add(new JSeparator());
+        loginForm.add(Box.createVerticalStrut(10));
 
         JTextField port = new JTextField("9092", 10);
         port.setMaximumSize(new Dimension(Integer.MAX_VALUE, name.getPreferredSize().height));
@@ -51,12 +52,16 @@ public class ContestApp extends JFrame {
         loginForm.add(port);
 
         loginForm.add(new JButton("I am host") {{
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
             addActionListener(e -> new ServerFrame(ContestApp.this, title.getText(), Integer.parseInt(port.getText())).setVisible(true));
         }});
+        loginForm.add(Box.createGlue());
         return loginForm;
     }
 
     public static void main(String[] args) {
+        Fonts.loadFonts();
+        Utils.setupIconColors();
         FlatDarculaLaf.setup();
         ContestApp contest = new ContestApp();
         contest.setVisible(true);

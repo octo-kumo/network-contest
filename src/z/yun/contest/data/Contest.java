@@ -1,7 +1,4 @@
-package z.yun.contest.server;
-
-import z.yun.contest.data.Participant;
-import z.yun.contest.data.Question;
+package z.yun.contest.data;
 
 import java.util.ArrayList;
 
@@ -13,10 +10,11 @@ public class Contest {
 
     public int current_index = -1;
 
-    public Question[] questions;
+    public ArrayList<Question> questions;
     public ArrayList<Participant> participants;
 
     public Contest() {
+        questions = new ArrayList<>();
         participants = new ArrayList<>();
     }
 
@@ -26,5 +24,9 @@ public class Contest {
         this.description = description;
         this.hostedBy = hostedBy;
         this.status = status;
+    }
+
+    public void revalidate() {
+        for (int i = 0; i < questions.size(); i++) questions.get(i).index = i;
     }
 }

@@ -4,11 +4,12 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import z.yun.contest.client.ContestClient;
+import z.yun.contest.data.Contest;
 import z.yun.contest.data.Participant;
+import z.yun.contest.data.Question;
 import z.yun.contest.observable.Observable;
 
 import javax.swing.*;
-import java.net.BindException;
 import java.util.ArrayList;
 
 public class ContestHost extends SocketIOServer {
@@ -24,12 +25,14 @@ public class ContestHost extends SocketIOServer {
     }
 
     public final Contest contest;
+    public final Observable<ArrayList<Question>> questions = new Observable<>();
     public final Observable<ArrayList<Participant>> participants = new Observable<>();
     private final Timer timer;
 
     public ContestHost(Contest contest, int port) {
         super(getConfig(port));
         this.contest = contest;
+        questions.set(this.contest.questions);
         participants.set(this.contest.participants);
         addEventListener(ContestClient.EVENT_HANDSHAKE, Participant.class, (client, data, ackSender) -> {
             client.sendEvent(EVENT_SERVER_STATUS, this.contest);
