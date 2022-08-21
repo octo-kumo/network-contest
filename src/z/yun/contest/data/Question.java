@@ -41,7 +41,6 @@ public class Question {
     public String title;
     public String desc;
 
-    public String image;
     public String[] options;
     public boolean[] correct;
     public String answer;
@@ -51,22 +50,38 @@ public class Question {
         this.index = -1;
         this.title = "";
         this.desc = "";
-        this.image = null;
         options = new String[]{};
         correct = new boolean[]{};
         this.answer = "";
     }
 
-    public Question(Type type, String title, String desc, String image, String[] options, boolean[] correct, String answer) {
+    public Question(Type type, String title, String desc, String[] options, boolean[] correct, String answer) {
         this.type = type;
         this.title = title;
         this.desc = desc;
-        this.image = image;
         this.options = new String[]{};
         this.options = options;
         this.correct = new boolean[]{};
         this.correct = correct;
         this.answer = answer;
         revalidate(this);
+    }
+
+    public Question(String title, String desc, String[] options, int correct) {
+        this(Type.MCQ, title, desc, options, genCorrect(correct, options.length), null);
+    }
+
+    public Question(String title, String desc, String[] options, boolean[] correct) {
+        this(Type.MRQ, title, desc, options, correct, null);
+    }
+
+    public Question(String title, String desc, String answer) {
+        this(Type.TEXT, title, desc, new String[]{}, new boolean[]{}, answer);
+    }
+
+    private static boolean[] genCorrect(int correct, int length) {
+        boolean[] c = new boolean[length];
+        c[correct] = true;
+        return c;
     }
 }

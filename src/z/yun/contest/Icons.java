@@ -10,4 +10,7 @@ public class Icons {
     public static FlatSVGIcon SAVE = new FlatSVGIcon(Objects.requireNonNull(Icons.class.getResource("/icons/content-save.svg")));
     public static FlatSVGIcon PLAY = new FlatSVGIcon(Objects.requireNonNull(Icons.class.getResource("/icons/play.svg")));
     public static FlatSVGIcon SYNC = new FlatSVGIcon(Objects.requireNonNull(Icons.class.getResource("/icons/sync.svg")));
+
+    public static FlatSVGIcon POWER = new FlatSVGIcon(Objects.requireNonNull(Icons.class.getResource("/icons/power.svg")));
+    public static FlatSVGIcon STOP = new FlatSVGIcon(Objects.requireNonNull(Icons.class.getResource("/icons/stop.svg")));
 }

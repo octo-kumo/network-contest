@@ -23,7 +23,6 @@ public class ContestSetup extends JPanel {
 
     public ContestSetup(final ContestHost host) {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(600, 400));
         add(createOptions(host), BorderLayout.CENTER);
         add(createToolbar(host), BorderLayout.SOUTH);
         fileChooser.setAcceptAllFileFilterUsed(false);
@@ -54,10 +53,13 @@ public class ContestSetup extends JPanel {
     }
 
     private Component socketOptions(ContestHost host) {
-        JTextArea log = new JTextArea(16, 0);
+        JTextArea log = new JTextArea();
         log.setFont(Fonts.spacemono.deriveFont(7.5f));
+        log.setEditable(false);
         LogOutputStreamAppender.setStaticOutputStream(new TextAreaOutputStream(log));
-        return new JScrollPane(log);
+        return new JScrollPane(log) {{
+            setPreferredSize(new Dimension(9999, 9999));
+        }};
     }
 
     private Box fileOptions(ContestHost host) {
@@ -102,6 +104,10 @@ public class ContestSetup extends JPanel {
         new TextPrompt("Your beautiful name~", by);
         Utils.addChangeListener(by, e -> host.contest.hostedBy = by.getText());
 
+        JTextField image = new JTextField(host.contest.image);
+        image.setBorder(new TitledBorder("Image"));
+        new TextPrompt("URL leading to an image for your contest", image);
+        Utils.addChangeListener(image, e -> host.contest.image = image.getText());
 
         JTextField port = new JTextField(String.valueOf(host.port));
         port.setBorder(new TitledBorder("Port"));
@@ -110,6 +116,7 @@ public class ContestSetup extends JPanel {
         box.add(title);
         box.add(desc);
         box.add(by);
+        box.add(image);
         box.add(port);
 
         return box;

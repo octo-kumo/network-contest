@@ -95,6 +95,7 @@ public class ContestHost extends SocketIOServer {
     }
 
     public void refresh() {
+        LOGGER.info("sending update to all clients\n" + getStatus());
         getBroadcastOperations().sendEvent(EVENT_SERVER_STATUS, getStatus());
     }
 }

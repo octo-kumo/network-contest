@@ -18,7 +18,6 @@ public class QuestionList extends JPanel {
         setLayout(new BorderLayout());
         box = Box.createVerticalBox();
 
-        setPreferredSize(new Dimension(600, 400));
         add(new JScrollPane(box) {{
             getVerticalScrollBar().setUnitIncrement(8);
         }}, BorderLayout.CENTER);

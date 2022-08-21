@@ -1,7 +1,9 @@
 package z.yun.contest;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import okhttp3.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -10,8 +12,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class Utils {
     /**
@@ -67,8 +73,36 @@ public class Utils {
     }
 
     public static void setupIconColors() {
-        FlatSVGIcon.ColorFilter.getInstance()
-                .add(Color.black, null, Color.white)
-                .add(Color.white, null, Color.black);
+        FlatSVGIcon.ColorFilter.getInstance().add(Color.black, null, Color.white).add(Color.white, null, Color.black);
+    }
+
+    private static final HashMap<String, BufferedImage> CACHE = new HashMap<>();
+
+    public static void downloadImage(String image, Consumer<Image> consumer) {
+
+        if (CACHE.containsKey(image)) consumer.accept(CACHE.get(image));
+        else {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(image).build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    consumer.accept(null);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try {
+                        BufferedImage read = ImageIO.read(Objects.requireNonNull(response.body()).byteStream());
+                        CACHE.put(image, read);
+                        consumer.accept(read);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        consumer.accept(null);
+                    }
+                }
+            });
+        }
     }
 }

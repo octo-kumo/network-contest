@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Contest {
     public String title;
+    public String image;
     public String description;
     public String hostedBy;
 
