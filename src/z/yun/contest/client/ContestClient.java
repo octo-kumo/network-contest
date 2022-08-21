@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import z.yun.contest.data.Contest;
 import z.yun.contest.data.Participant;
 import z.yun.contest.observable.Observable;
-import z.yun.contest.data.Contest;
 import z.yun.contest.server.ContestHost;
 
 import java.net.URI;

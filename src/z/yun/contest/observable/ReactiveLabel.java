@@ -6,7 +6,7 @@ public class ReactiveLabel<T> extends JLabel implements ChangeListener<T> {
     private final Bindable<T> observable;
 
     public ReactiveLabel(Bindable<T> observable) {
-        super(observable.get().toString());
+        super(observable.getAsOptional().map(Object::toString).orElse(""));
         this.observable = observable;
     }
 
@@ -21,7 +21,6 @@ public class ReactiveLabel<T> extends JLabel implements ChangeListener<T> {
     @Override
     public void changed(T n) {
         setText(n.toString());
-        revalidate();
-        repaint();
+        getRootPane().repaint();
     }
 }

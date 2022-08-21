@@ -1,6 +1,7 @@
-package z.yun.contest.server;
+package z.yun.contest.server.ui;
 
 import z.yun.contest.data.Participant;
+import z.yun.contest.server.ContestHost;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

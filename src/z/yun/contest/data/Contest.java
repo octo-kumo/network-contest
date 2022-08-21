@@ -6,9 +6,9 @@ public class Contest {
     public String title;
     public String description;
     public String hostedBy;
-    public String status;
 
     public int current_index = -1;
+    public boolean acceptingAnswers = false;
 
     public ArrayList<Question> questions;
     public ArrayList<Participant> participants;
@@ -18,12 +18,11 @@ public class Contest {
         participants = new ArrayList<>();
     }
 
-    public Contest(String title, String description, String hostedBy, String status) {
+    public Contest(String title, String description, String hostedBy) {
         this();
         this.title = title;
         this.description = description;
         this.hostedBy = hostedBy;
-        this.status = status;
     }
 
     public void revalidate() {

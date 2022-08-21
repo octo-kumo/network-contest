@@ -1,9 +1,10 @@
-package z.yun.contest.server;
+package z.yun.contest.server.ui;
 
 import z.yun.contest.Fonts;
 import z.yun.contest.Icons;
 import z.yun.contest.Utils;
 import z.yun.contest.data.Question;
+import z.yun.contest.server.ContestHost;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

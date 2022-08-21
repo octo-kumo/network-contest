@@ -35,12 +35,21 @@ public class Bindings {
 
             @Override
             public U get() {
-                return mapper.apply(observable.get());
+                try {
+                    return mapper.apply(observable.get());
+                } catch (NullPointerException ignored) {
+                    return null;
+                }
             }
 
             @Override
             public Bindable<U> listen(ChangeListener<U> listener) {
-                ChangeListener<T> l = e -> listener.changed(mapper.apply(e));
+                ChangeListener<T> l = e -> {
+                    try {
+                        listener.changed(mapper.apply(e));
+                    } catch (NullPointerException ignored) {
+                    }
+                };
                 map.put(listener, l);
                 observable.listen(l);
                 return this;

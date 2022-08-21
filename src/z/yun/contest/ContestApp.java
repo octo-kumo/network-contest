@@ -45,7 +45,7 @@ public class ContestApp extends JFrame {
         port.setMaximumSize(new Dimension(Integer.MAX_VALUE, name.getPreferredSize().height));
         port.setBorder(new TitledBorder("Port"));
 
-        JTextField title = new JTextField("Quiz", 10);
+        JTextField title = new JTextField("CS6132 Network Contest", 10);
         title.setMaximumSize(new Dimension(Integer.MAX_VALUE, name.getPreferredSize().height));
         title.setBorder(new TitledBorder("Title"));
         loginForm.add(title);

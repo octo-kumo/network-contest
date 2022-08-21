@@ -3,6 +3,10 @@ package z.yun.contest.server;
 import z.yun.contest.ContestApp;
 import z.yun.contest.data.Contest;
 import z.yun.contest.data.Question;
+import z.yun.contest.server.ui.ContestPlayer;
+import z.yun.contest.server.ui.ContestSetup;
+import z.yun.contest.server.ui.ParticipantList;
+import z.yun.contest.server.ui.QuestionList;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,7 +20,7 @@ public class ServerFrame extends JDialog {
         super(contestApp, "Server", false);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        Contest contest = new Contest(text, "Fun little first ever contest", "yun", "lel");
+        Contest contest = new Contest(text, "Yggdrasil: The World Tree, perhaps the world's largest network ever described in a legend, colossal tree which supports the heavens, thereby connecting the heavens, the terrestrial world, and, through its roots, the underworld.", "yun");
         contest.questions.add(new Question(Question.Type.MCQ, "Test", "Lorem blah blab", null, new String[]{"a", "b (mememe)", "c", "d"}, new boolean[]{}, null));
         contest.questions.add(new Question(Question.Type.MRQ, "Test", "Lorem blah blab", null, new String[]{"a", "b (mememe)", "c", "d"}, new boolean[]{}, null));
         contest.questions.add(new Question(Question.Type.MRQ, "Test", "Lorem blah blab", null, new String[]{"a", "b (mememe)", "c", "d"}, new boolean[]{}, null));
@@ -28,6 +32,7 @@ public class ServerFrame extends JDialog {
         tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         tabbedPane.addTab("Setup", new ContestSetup(host));
         tabbedPane.addTab("Questions", new QuestionList(host));
+        tabbedPane.addTab("Player", new ContestPlayer(host));
         add(tabbedPane, BorderLayout.CENTER);
         add(new ParticipantList(host), BorderLayout.WEST);
 

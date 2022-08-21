@@ -1,8 +1,9 @@
-package z.yun.contest.server;
+package z.yun.contest.server.ui;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import z.yun.contest.Icons;
 import z.yun.contest.data.Question;
+import z.yun.contest.server.ContestHost;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +18,7 @@ public class QuestionList extends JPanel {
         setLayout(new BorderLayout());
         box = Box.createVerticalBox();
 
-        setPreferredSize(new Dimension(300, 400));
+        setPreferredSize(new Dimension(600, 400));
         add(new JScrollPane(box) {{
             getVerticalScrollBar().setUnitIncrement(8);
         }}, BorderLayout.CENTER);
