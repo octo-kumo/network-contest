@@ -1,7 +1,12 @@
 package z.yun.contest.data;
 
+import org.jetbrains.annotations.Nullable;
+
 public class Question {
     public static void addChoice(Question question, String choice) {
+        if (question.correct == null) question.correct = new boolean[]{};
+        if (question.options == null) question.options = new String[]{};
+        revalidate(question);
         boolean[] c = new boolean[question.options.length + 1];
         String[] nopt = new String[question.options.length + 1];
         System.arraycopy(question.options, 0, nopt, 0, question.options.length);
@@ -12,6 +17,9 @@ public class Question {
     }
 
     public static void removeChoice(Question question, int index) {
+        if (question.correct == null) question.correct = new boolean[]{};
+        if (question.options == null) question.options = new String[]{};
+        revalidate(question);
         boolean[] c = new boolean[question.correct.length - 1];
         String[] nopt = new String[question.options.length - 1];
         System.arraycopy(question.options, 0, nopt, 0, index);
@@ -41,8 +49,8 @@ public class Question {
     public String title;
     public String desc;
 
-    public String[] options;
-    public boolean[] correct;
+    public String @Nullable [] options;
+    public boolean @Nullable [] correct;
     public String answer;
 
     public Question() {
@@ -55,7 +63,7 @@ public class Question {
         this.answer = "";
     }
 
-    public Question(Type type, String title, String desc, String[] options, boolean[] correct, String answer) {
+    public Question(Type type, String title, String desc, String @Nullable [] options, boolean @Nullable [] correct, String answer) {
         this.type = type;
         this.title = title;
         this.desc = desc;

@@ -1,38 +1,20 @@
 package z.yun.contest.observable;
 
-import java.util.HashMap;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 import java.util.function.Function;
 
 public class Bindings {
-    public static <T> Bindable<String> format(Observable<T> observable, String format) {
-        return new Bindable<String>() {
-            final HashMap<ChangeListener<String>, ChangeListener<T>> map = new HashMap<>();
-
-            @Override
-            public String get() {
-                return String.format(format, observable.get());
-            }
-
-            @Override
-            public Bindable<String> listen(ChangeListener<String> listener) {
-                ChangeListener<T> l = e -> listener.changed(String.format(format, e));
-                map.put(listener, l);
-                observable.listen(l);
-                return this;
-            }
-
-            @Override
-            public Bindable<String> stop(ChangeListener<String> listener) {
-                observable.stop(map.remove(listener));
-                return this;
-            }
-        };
+    public static <T> Bindable<String> format(Bindable<T> observable, String format) {
+        return map(observable, o -> String.format(format, o));
     }
 
-    public static <T, U> Bindable<U> map(Observable<T> observable, Function<T, U> mapper) {
+    public static <T, U> Bindable<U> map(Bindable<T> observable, Function<T, U> mapper) {
         return new Bindable<U>() {
-            final HashMap<ChangeListener<U>, ChangeListener<T>> map = new HashMap<>();
+            final ArrayList<ChangeListener<U>> list = new ArrayList<>();
 
+            @Nullable
             @Override
             public U get() {
                 try {
@@ -44,22 +26,34 @@ public class Bindings {
 
             @Override
             public Bindable<U> listen(ChangeListener<U> listener) {
-                ChangeListener<T> l = e -> {
-                    try {
-                        listener.changed(mapper.apply(e));
-                    } catch (NullPointerException ignored) {
-                    }
-                };
-                map.put(listener, l);
-                observable.listen(l);
+                if (list.size() == 0) observable.listen(changed);
+                synchronized (list) {
+                    list.add(listener);
+                }
                 return this;
             }
 
             @Override
             public Bindable<U> stop(ChangeListener<U> listener) {
-                observable.stop(map.remove(listener));
+                synchronized (list) {
+                    list.remove(listener);
+                }
+                if (list.size() == 0) observable.stop(changed);
                 return this;
             }
+
+            @Override
+            public Bindable<U> ping() {
+                changed.changed(observable.get());
+                return this;
+            }
+
+            private final ChangeListener<T> changed = e -> {
+                U v = mapper.apply(e);
+                synchronized (list) {
+                    list.forEach(p -> p.changed(v));
+                }
+            };
         };
     }
 }

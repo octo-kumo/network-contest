@@ -17,7 +17,7 @@ public class ServerFrame extends JDialog {
     private final ContestHost host;
 
     public ServerFrame(ContestApp contestApp, String text, int port) {
-        super(contestApp, "Server", false);
+        super(contestApp, "Server", true);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         Contest contest = new Contest(text, "Yggdrasil: The World Tree, perhaps the world's largest network ever described in a legend, colossal tree which supports the heavens, thereby connecting the heavens, the terrestrial world, and, through its roots, the underworld.", "yun");
@@ -29,7 +29,7 @@ public class ServerFrame extends JDialog {
                 new String[]{"coaxial cable", "fiber", "radio", "infrared"}, new boolean[]{true, true, false, false}));
         contest.questions.add(new Question("Topology", "What is the Hamming distance between 0001 and 0010?",
                 "2"));
-        contest.image = "https://files.catbox.moe/vk5lpo.png";
+        contest.image = "https://res.cloudinary.com/chatboxzy/image/upload/c_scale,w_250/v1661168401/susco.png";
         contest.revalidate();
         host = new ContestHost(contest, port);
 
@@ -41,27 +41,21 @@ public class ServerFrame extends JDialog {
         tabbedPane.setPreferredSize(new Dimension(800, 600));
         add(tabbedPane, BorderLayout.CENTER);
         add(new ParticipantList(host), BorderLayout.WEST);
-
         pack();
         setLocationRelativeTo(null);
-    }
-
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-        if (visible)
-            try {
-                host.start();
-            } catch (Exception e) {
-                System.out.println("Error");
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                dispose();
-            }
-        else host.stop();
+        try {
+            host.start();
+        } catch (Exception e) {
+            System.out.println("Error");
+            e.printStackTrace();
+            host.stop();
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            throw new RuntimeException("fail");
+        }
     }
 
     public void dispose() {
-        super.dispose();
         host.stop();
+        super.dispose();
     }
 }

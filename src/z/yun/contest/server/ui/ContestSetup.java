@@ -113,11 +113,26 @@ public class ContestSetup extends JPanel {
         port.setBorder(new TitledBorder("Port"));
         port.setEditable(false);
 
+        JTextField publicUrl = new JTextField(host.publicURL.or("<unset>"));
+        host.publicURL.listen(publicUrl::setText);
+        publicUrl.setBorder(new TitledBorder("Ngrok"));
+        publicUrl.setEditable(false);
+        publicUrl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        publicUrl.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                setEnabled(false);
+                host.ngrok(() -> publicUrl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)), () -> setEnabled(true));
+            }
+        });
+        Box network = Box.createHorizontalBox();
+        network.add(publicUrl);
+        network.add(port);
         box.add(title);
         box.add(desc);
         box.add(by);
         box.add(image);
-        box.add(port);
+        box.add(network);
 
         return box;
     }

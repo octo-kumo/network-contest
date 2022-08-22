@@ -1,31 +1,39 @@
 package z.yun.contest.observable;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 
 public class Observable<T> implements Bindable<T> {
-    private T value;
+    private @Nullable T value;
     private final ArrayList<ChangeListener<T>> listeners = new ArrayList<>();
 
     public Observable() {
         this(null);
     }
 
-    public Observable(T value) {
+    public Observable(@Nullable T value) {
         this.value = value;
-    }
-
-    public Observable(T value, ChangeListener<T> listener) {
-        this(value);
-        listen(listener);
     }
 
     public T get() {
         return value;
     }
 
-    public void set(T value) {
-        listeners.forEach(l -> l.changed(value));
+    public Observable<T> set(T value) {
         this.value = value;
+        return ping();
+    }
+
+    public Observable<T> ping() {
+        listeners.forEach(l -> {
+            try {
+                l.changed(value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return this;
     }
 
     public Observable<T> listen(ChangeListener<T> listener) {

@@ -4,6 +4,10 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import okhttp3.*;
 
 import javax.imageio.ImageIO;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -15,11 +19,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Utils {
+    private static final OkHttpClient client;
+
     /**
      * Installs a listener to receive notification when the text of any
      * {@code JTextComponent} is changed. Internally, it installs a
@@ -82,7 +91,6 @@ public class Utils {
 
         if (CACHE.containsKey(image)) consumer.accept(CACHE.get(image));
         else {
-            OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(image).build();
             client.newCall(request).enqueue(new Callback() {
                 @Override
@@ -100,9 +108,62 @@ public class Utils {
                     } catch (Exception e) {
                         e.printStackTrace();
                         consumer.accept(null);
+                    } finally {
+                        response.close();
                     }
                 }
             });
         }
+    }
+
+    static {
+        final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
+
+        // Install the all-trusting trust manager
+        final SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException(e);
+        }
+        // Create an ssl socket factory with our all-trusting manager
+        final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
+        builder.hostnameVerifier((hostname, session) -> true);
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+
+        builder.readTimeout(30, TimeUnit.SECONDS);
+        builder.writeTimeout(30, TimeUnit.SECONDS);
+        client = builder.build();
+    }
+
+    public static void setEnabled(Component component, boolean enabled) {
+        component.setEnabled(enabled);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setEnabled(child, enabled);
+            }
+        }
+    }
+
+    public static long map(long T, long R, long v) {
+        return (v % T) * R / T;
     }
 }

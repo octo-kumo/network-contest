@@ -17,40 +17,49 @@ import static io.socket.client.Socket.*;
 public class ContestClient {
     private static final ObjectMapper mapper = new ObjectMapper();
     public static final String EVENT_HANDSHAKE = "handshake";
+    public static final String EVENT_ANSWER = "answer";
 
     public enum Status {
         CONNECTED, CONNECTING, DISCONNECTED
     }
 
     private final Socket socket;
-    private final Participant participant;
+    public final Observable<Participant> participant = new Observable<>();
 
     public final Observable<Long> ping = new Observable<>(0L);
     public final Observable<Contest> contest = new Observable<>();
     public final Observable<Status> status = new Observable<>(Status.DISCONNECTED);
 
     public ContestClient(String host, Participant participant) {
-        this.participant = participant;
+        this.participant.set(participant);
         socket = IO.socket(URI.create(host));
         on(EVENT_CONNECT, e -> {
-            this.participant.id = socket.id();
+            this.participant.get().id = socket.id();
             status.set(Status.CONNECTED);
             emit(EVENT_HANDSHAKE, participant);
         });
         on(EVENT_CONNECTING, os -> status.set(Status.CONNECTING));
         on(EVENT_DISCONNECT, os -> {
-            this.participant.id = null;
+            this.participant.get().id = null;
             status.set(Status.DISCONNECTED);
         });
 
         on(ContestHost.EVENT_SERVER_STATUS, e -> {
             try {
                 contest.set(mapper.readValue(e[0].toString(), Contest.class));
+                if (e.length > 1) this.participant.set(mapper.readValue(e[1].toString(), Participant.class));
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
             }
         });
         on(ContestHost.EVENT_SERVER_PING, e -> ping.set(System.currentTimeMillis() - (long) e[0]));
+        on(ContestHost.EVENT_SERVER_SET_PARTICIPANT, e -> {
+            try {
+                this.participant.set(mapper.readValue(e[0].toString(), Participant.class));
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     public void connect() {

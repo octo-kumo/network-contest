@@ -1,6 +1,7 @@
 package z.yun.contest;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.util.SystemInfo;
 import z.yun.contest.client.ClientFrame;
 import z.yun.contest.server.ServerFrame;
 
@@ -11,10 +12,20 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 public class ContestApp extends JFrame {
+    private ServerFrame server;
+    private ClientFrame client;
+
+    public void dispose() {
+        super.dispose();
+        if (server != null) server.dispose();
+        if (client != null) client.dispose();
+        System.exit(0);
+    }
+
     public ContestApp() {
         super("Network Contest");
         setLayout(new BorderLayout());
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         add(createLoginForm(), BorderLayout.CENTER);
 
@@ -35,7 +46,7 @@ public class ContestApp extends JFrame {
         loginForm.add(name);
         loginForm.add(new JButton("Login") {{
             setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
-            addActionListener(e -> new ClientFrame(ContestApp.this, host.getText(), name.getText()).setVisible(true));
+            addActionListener(e -> (client = new ClientFrame(ContestApp.this, host.getText(), name.getText())).setVisible(true));
         }});
         loginForm.add(Box.createVerticalStrut(10));
         loginForm.add(new JSeparator());
@@ -53,7 +64,12 @@ public class ContestApp extends JFrame {
 
         loginForm.add(new JButton("I am host") {{
             setMaximumSize(new Dimension(Integer.MAX_VALUE, getPreferredSize().height));
-            addActionListener(e -> new ServerFrame(ContestApp.this, title.getText(), Integer.parseInt(port.getText())).setVisible(true));
+            addActionListener(e -> {
+                try {
+                    (server = new ServerFrame(ContestApp.this, title.getText(), Integer.parseInt(port.getText()))).setVisible(true);
+                } catch (Exception ignored) {
+                }
+            });
         }});
         loginForm.add(Box.createGlue());
         return loginForm;
@@ -62,8 +78,17 @@ public class ContestApp extends JFrame {
     public static void main(String[] args) {
         Fonts.loadFonts();
         Utils.setupIconColors();
+        setupMac();
         FlatDarculaLaf.setup();
         ContestApp contest = new ContestApp();
         contest.setVisible(true);
+    }
+
+    private static void setupMac() {
+        if (SystemInfo.isMacOS) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.application.name", "Network Contest");
+            System.setProperty("apple.awt.application.appearance", "system");
+        }
     }
 }
