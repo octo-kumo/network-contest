@@ -35,6 +35,7 @@ public class QuestionList extends JPanel {
                 host.contest.questions.add(new Question());
                 host.contest.revalidate();
                 host.questions.set(host.contest.questions);
+                host.clearAnswers();
             }
         });
         return bar;

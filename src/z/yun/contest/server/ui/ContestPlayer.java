@@ -219,6 +219,11 @@ public class ContestPlayer extends JPanel implements ActionListener {
                         new boolean[question.options.length] : new boolean[0];
 
         JTextField answerField = new JTextField();
+        ActionListener submit = e -> {
+            if (client != null) client.answer(new Answer(question.type,
+                    question.type == Question.Type.TEXT ? answerField.getText() : userAnswer));
+        };
+
         if (question.type == Question.Type.TEXT) {
             box.add(answerField);
             if (!contest.acceptingAnswers) {
@@ -226,12 +231,14 @@ public class ContestPlayer extends JPanel implements ActionListener {
                 answerField.setEditable(false);
                 if (onClient)
                     answerField.setBackground(Objects.equals(client.getCurrentAnswer() == null ? "" : client.getCurrentAnswer().answer, question.answer) ? CORRECT_COLOR : INCORRECT_COLOR);
-            } else if (!onClient) answerField.setEditable(false);
+            } else if (onClient) answerField.addActionListener(submit);
+            else answerField.setEditable(false);
         } else box.add(createChoices(contest, question, userAnswer, question.correct, onClient));
         box.add(Box.createVerticalStrut(15));
         if (onClient) box.add(new JButton("Submit") {{
-            addActionListener(e -> client.answer(new Answer(question.type,
-                    question.type == Question.Type.TEXT ? answerField.getText() : userAnswer)));
+            setAlignmentX(CENTER_ALIGNMENT);
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
+            addActionListener(submit);
         }});
         else {
             if (host.contest.acceptingAnswers) box.add(createResponseCount(host));

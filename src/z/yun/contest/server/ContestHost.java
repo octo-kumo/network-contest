@@ -166,10 +166,12 @@ public class ContestHost extends SocketIOServer {
     }
 
     public void clearAnswers() {
-        answers.set(IntStream.range(0, questions.get().size()).mapToObj(i -> new HashMap<String, Answer>()).toArray(HashMap[]::new));
+        ArrayList<Question> questions = this.questions.get();
+        if (questions == null) return;
+        answers.set(IntStream.range(0, questions.size()).mapToObj(i -> new HashMap<String, Answer>()).toArray(HashMap[]::new));
         participants.getAsOptional().ifPresent(a -> a.forEach(p -> {
             if (p.id != null) {
-                Arrays.fill(p.answers, null);
+                p.answers = new Answer[questions.size()];
                 p.score = 0;
                 p.place = 1;
                 getClient(UUID.fromString(p.id)).sendEvent(ContestHost.EVENT_SERVER_SET_PARTICIPANT, p);
