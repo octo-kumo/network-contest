@@ -1,6 +1,7 @@
 package z.yun.contest.client;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import z.yun.contest.ContestAppMenu;
 import z.yun.contest.Fonts;
 import z.yun.contest.Icons;
 import z.yun.contest.Utils;
@@ -29,6 +30,7 @@ public class ClientFrame extends JDialog {
         super(parent, "Client", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
+        setJMenuBar(new ContestAppMenu());
         Participant participant = new Participant(null, name);
         participant.score = 0;
         host = host.replace("tcp://", "http://").trim();

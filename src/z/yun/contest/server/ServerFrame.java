@@ -1,6 +1,7 @@
 package z.yun.contest.server;
 
 import z.yun.contest.ContestApp;
+import z.yun.contest.ContestAppMenu;
 import z.yun.contest.data.Contest;
 import z.yun.contest.data.Question;
 import z.yun.contest.server.ui.ContestPlayer;
@@ -20,6 +21,7 @@ public class ServerFrame extends JDialog {
         super(contestApp, "Server", true);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setJMenuBar(new ContestAppMenu());
         Contest contest = new Contest(text, "Yggdrasil: The World Tree, perhaps the world's largest network ever described in a legend, colossal tree which supports the heavens, thereby connecting the heavens, the terrestrial world, and, through its roots, the underworld.", "yun");
         contest.questions.add(new Question("Simple??", "What is this **module**?",
                 new String[]{"CS6132", "CS6131", "CS6111", "CS6432"}, 0));

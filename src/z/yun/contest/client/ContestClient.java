@@ -43,7 +43,7 @@ public class ContestClient {
             this.participant.get().id = null;
             status.set(Status.DISCONNECTED);
         });
-
+        status.set(socket.connected() ? Status.CONNECTED : Status.DISCONNECTED);
         on(ContestHost.EVENT_SERVER_STATUS, e -> {
             try {
                 contest.set(mapper.readValue(e[0].toString(), Contest.class));
